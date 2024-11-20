@@ -10,6 +10,7 @@ public:
   // Construct Reassembler to write into given ByteStream.
   explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ) {}
 
+
   /*
    * Insert a new substring to be reassembled into a ByteStream.
    *   `first_index`: the index of the first byte of the substring
@@ -45,25 +46,9 @@ public:
 private:
   ByteStream output_; // the Reassembler writes to this ByteStream
 
-  // 定义了一个字节流片段
-  // struct sub_string {
-  //   size_t begin = 0;
-  //   size_t end = 0;
-  //   std::string data = "";
-  //   bool operator < (const sub_string t) const {
-  //     return begin < t.begin;
-  //   }
-  // };
-
-  // std::set<sub_string> _sub_strs {};
   std::deque<std::string> _buffer {}; // 继承lab0
   std::deque<bool> _flag {false};
 
   uint64_t unassembled_byte = 0;
   bool _input_ended = false;
-  uint64_t capacity_;
-
-  // 将后进入的字节流合并到之前的字节流基础上
-  // long merge_strs(sub_string& str1, sub_string& str2);
-
 };
