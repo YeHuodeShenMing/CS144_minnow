@@ -1,6 +1,8 @@
 #pragma once
 
 #include "byte_stream.hh"
+#include <string>
+#include <set>
 
 class Reassembler
 {
@@ -42,4 +44,26 @@ public:
 
 private:
   ByteStream output_; // the Reassembler writes to this ByteStream
+
+  // 定义了一个字节流片段
+  // struct sub_string {
+  //   size_t begin = 0;
+  //   size_t end = 0;
+  //   std::string data = "";
+  //   bool operator < (const sub_string t) const {
+  //     return begin < t.begin;
+  //   }
+  // };
+
+  // std::set<sub_string> _sub_strs {};
+  std::deque<std::string> _buffer {}; // 继承lab0
+  std::deque<bool> _flag {false};
+
+  uint64_t unassembled_byte = 0;
+  bool _input_ended = false;
+  uint64_t capacity_;
+
+  // 将后进入的字节流合并到之前的字节流基础上
+  // long merge_strs(sub_string& str1, sub_string& str2);
+
 };

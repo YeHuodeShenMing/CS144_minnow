@@ -7,9 +7,9 @@ using namespace std;
 ByteStream::ByteStream( uint64_t capacity )
   : capacity_( capacity )
   , _buffer()
-  , _remaining_capacity( capacity )
   , _bytes_readed( 0 )
   , _bytes_written( 0 )
+  , _bytes_buffer( 0 )
   , _input_ended( false )
 {}
 
@@ -22,13 +22,19 @@ bool Writer::is_closed() const
 void Writer::push( string data )
 {
   // Your code here.
-  for ( const auto& c : data ) {
-    if ( _remaining_capacity > 0 ) {
-      _buffer.push_back( c );
-      _remaining_capacity -= 1;
-      _bytes_written += 1;
-    }
+  if ( available_capacity() == 0 || is_closed() || data.size() == 0 ) {
+    return;
   }
+  uint64_t push_len = min( data.size(), available_capacity() );
+
+  if ( push_len < data.size() ) {
+    data = data.substr( 0, push_len );
+  }
+
+  _buffer.push_back( data );
+
+  _bytes_written += push_len;
+  _bytes_buffer += push_len;
 }
 
 void Writer::close()
@@ -40,7 +46,7 @@ void Writer::close()
 uint64_t Writer::available_capacity() const
 {
   // Your code here.
-  return _remaining_capacity;
+  return capacity_ - _bytes_buffer;
 }
 
 uint64_t Writer::bytes_pushed() const
@@ -52,38 +58,54 @@ uint64_t Writer::bytes_pushed() const
 bool Reader::is_finished() const
 {
   // Your code here.
-  return _input_ended && ( _remaining_capacity == capacity_ );
+  return _input_ended && ( _bytes_buffer == 0 );
 }
 
 uint64_t Reader::bytes_popped() const
 {
   // Your code here.
-  return _bytes_written - capacity_ + _remaining_capacity;
+  return _bytes_written - _bytes_buffer;
 }
 
 string_view Reader::peek() const
 {
   // Your code here.
   if ( _buffer.empty() ) {
-    return string_view();
+    return {};
   }
-  return string_view( &_buffer.front(), 1 );
+  return string_view( _buffer.front() );
 }
 
 void Reader::pop( uint64_t len )
 {
-  // Your code here.
-  uint64_t pop_length = min( len, capacity_ - _remaining_capacity );
-  _bytes_readed += pop_length;
-  _remaining_capacity += pop_length;
-  while ( pop_length ) {
+  // 确保不超过缓冲区内可用数据量
+  uint64_t pop_length = min( len, _bytes_buffer );
+
+  // 循环处理要移除的数据
+  while ( pop_length > 0 && !_buffer.empty() ) {
+    auto& front_str = _buffer.front(); // 获取当前队列的前端元素
+    auto sz = front_str.size();
+
+    if ( pop_length < sz ) {
+      // 只需要移除部分数据
+      front_str.erase( 0, pop_length );
+      _bytes_readed += pop_length;
+      _bytes_buffer -= pop_length;
+      return;
+    }
+
+    // 移除整个字符串
     _buffer.pop_front();
-    pop_length -= 1;
+
+    _bytes_readed += sz;
+    _bytes_buffer -= sz;
+
+    pop_length -= sz; // 减少还需移除的长度
   }
 }
 
 uint64_t Reader::bytes_buffered() const
 {
   // Your code here.
-  return capacity_ - _remaining_capacity;
+  return _bytes_buffer;
 }

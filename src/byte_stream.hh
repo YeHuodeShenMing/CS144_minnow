@@ -26,10 +26,11 @@ protected:
   // Please add any additional state to the ByteStream here, and not to the Writer and Reader interfaces.
   uint64_t capacity_;
   bool error_ {};
-  std::deque<char> _buffer {}; // 缓冲区
-  uint64_t _remaining_capacity;
+  std::deque<std::string> _buffer {}; // 缓冲区
+
   size_t _bytes_readed;
   size_t _bytes_written;
+  size_t _bytes_buffer;
   bool _input_ended; // 判断写端结束的标志位
 };
 
