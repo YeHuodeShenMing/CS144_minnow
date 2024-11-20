@@ -1,6 +1,6 @@
 #include "byte_stream.hh"
-#include <string_view>
 #include <iostream>
+#include <string_view>
 
 using namespace std;
 
@@ -22,7 +22,7 @@ bool Writer::is_closed() const
 void Writer::push( string data )
 {
   // Your code here.
-  for ( char c : data ) {
+  for ( const auto& c : data ) {
     if ( _remaining_capacity > 0 ) {
       _buffer.push_back( c );
       _remaining_capacity -= 1;
@@ -64,20 +64,20 @@ uint64_t Reader::bytes_popped() const
 string_view Reader::peek() const
 {
   // Your code here.
-  char top_elem = '\0';
-  top_elem = *_buffer.begin();
-  cout << "this is top_elem" << top_elem;
-  return string_view( &top_elem, 1 );
+  if ( _buffer.empty() ) {
+    return string_view();
+  }
+  return string_view( &_buffer.front(), 1 );
 }
 
 void Reader::pop( uint64_t len )
 {
   // Your code here.
-  uint64_t pop_length = min( len, bytes_buffered() );
+  uint64_t pop_length = min( len, capacity_ - _remaining_capacity );
+  _bytes_readed += pop_length;
+  _remaining_capacity += pop_length;
   while ( pop_length ) {
-    _bytes_readed += 1;
     _buffer.pop_front();
-    _remaining_capacity += 1;
     pop_length -= 1;
   }
 }
@@ -87,4 +87,3 @@ uint64_t Reader::bytes_buffered() const
   // Your code here.
   return capacity_ - _remaining_capacity;
 }
-
