@@ -47,11 +47,11 @@ private:
   ByteStream output_; // the Reassembler writes to this ByteStream
 
   std::deque<std::string> _buffer {}; // 继承lab0
-  std::deque<bool> _flag {false};
+  std::deque<bool> flag_ {false};
 
-  uint64_t unassembled_byte = 0;
+  uint64_t unassembled_byte_ = 0;
 
-  bool _eof = false;
+  bool eof_ = false;
 
   uint64_t last_index_ = 0;
 };
