@@ -50,4 +50,8 @@ private:
   std::deque<bool> _flag {false};
 
   uint64_t unassembled_byte = 0;
+
+  bool _eof = false;
+
+  uint64_t last_index_ = 0;
 };

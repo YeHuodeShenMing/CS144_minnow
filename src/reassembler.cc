@@ -1,11 +1,15 @@
 #include "reassembler.hh"
-#include <iostream>
+// #include <iostream>
 
 using namespace std;
 
 void Reassembler::insert( uint64_t first_index, string data, bool is_last_substring )
 {
   // Your code here.
+  if (is_last_substring) {
+    _eof = true;
+    last_index_ = max(last_index_, first_index + data.length());
+  }
 
   uint64_t _first_unassembled = output_.writer().bytes_pushed();
   uint64_t _first_unacceptable = _first_unassembled + output_.writer().available_capacity();
@@ -25,9 +29,9 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   uint64_t begin = max( _first_unassembled, first_index );
   uint64_t end = min( _first_unacceptable, first_index + data.length() );
 
-  cout << "DEBUG: initialization = " << first_index << " " << data << " " << is_last_substring << endl;
+  // cout << "DEBUG: initialization = " << first_index << " " << data << " " << is_last_substring << endl;
   // cout << "DEBUG: _first_unassembled = " << _first_unassembled << endl;
-  // cout << "DEBUG: _first_unacceptable = " << _first_unacceptable << endl;
+  // cout << "DEBUG: last_index_ = " << last_index_ << endl;
 
   for ( uint64_t i = begin; i < end; i++ ) {
     if ( !_flag[i - _first_unassembled] ) {
@@ -35,8 +39,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       _flag[i - _first_unassembled] = true;
       _buffer[i - _first_unassembled] = data[i - first_index];
       unassembled_byte += 1;
-      cout << "DEBUG: 111 bytes_pending = " << bytes_pending() << endl;
-      cout << "DEBUG: 111 bytes_pushed = " << output_.writer().bytes_pushed() << endl;
+      // cout << "DEBUG: 111 bytes_pending = " << bytes_pending() << endl;
+      // cout << "DEBUG: 111 bytes_pushed = " << output_.writer().bytes_pushed() << endl;
     }
   }
 
@@ -46,7 +50,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   while ( !_flag.empty() && _flag.front() ) {
     wait_str += _buffer.front();
 
-    cout << "DEBUG: wait_str = " << wait_str << endl;
+    // cout << "DEBUG: wait_str = " << wait_str << endl;
 
     _buffer.pop_front();
     _flag.pop_front();
@@ -63,13 +67,16 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     } else {
       unassembled_byte = 0;
     }
-    cout << "DEBUG: 222 bytes_pending = " << bytes_pending() << endl;
-    cout << "DEBUG: 222 bytes_pushed = " << output_.writer().bytes_pushed() << endl;
+    // cout << "DEBUG: 222 bytes_pending = " << bytes_pending() << endl;
+    // cout << "DEBUG: 222 bytes_pushed = " << output_.writer().bytes_pushed() << endl;
   }
+
+  // cout << "DEBUG: 3333 _eof = " << _eof << endl;
 
 
   // 标记输入结束, 放到这一轮输入的最后
-  if ( is_last_substring && unassembled_byte == 0 ) {
+  if ( _eof && unassembled_byte == 0 && output_.writer().bytes_pushed() >= last_index_) {
+    // cout<<"INININ";
     output_.writer().close();
   }
 }
