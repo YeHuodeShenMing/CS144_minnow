@@ -8,70 +8,70 @@ using namespace std;
 int main()
 {
   try {
-    // {
-    //   ReassemblerTestHarness test { "all within capacity", 2 };
+    {
+      ReassemblerTestHarness test { "all within capacity", 2 };
 
-    //   test.execute( Insert { "ab", 0 } );
-    //   test.execute( BytesPushed( 2 ) );
-    //   test.execute( BytesPending( 0 ) );
-    //   test.execute( ReadAll( "ab" ) );
+      test.execute( Insert { "ab", 0 } );
+      test.execute( BytesPushed( 2 ) );
+      test.execute( BytesPending( 0 ) );
+      test.execute( ReadAll( "ab" ) );
 
-    //   test.execute( Insert { "cd", 2 } );
-    //   test.execute( BytesPushed( 4 ) );
-    //   test.execute( BytesPending( 0 ) );
-    //   test.execute( ReadAll( "cd" ) );
+      test.execute( Insert { "cd", 2 } );
+      test.execute( BytesPushed( 4 ) );
+      test.execute( BytesPending( 0 ) );
+      test.execute( ReadAll( "cd" ) );
 
-    //   test.execute( Insert { "ef", 4 } );
-    //   test.execute( BytesPushed( 6 ) );
-    //   test.execute( BytesPending( 0 ) );
-    //   test.execute( ReadAll( "ef" ) );
-    // }
+      test.execute( Insert { "ef", 4 } );
+      test.execute( BytesPushed( 6 ) );
+      test.execute( BytesPending( 0 ) );
+      test.execute( ReadAll( "ef" ) );
+    }
 
-    // {
-    //   ReassemblerTestHarness test { "insert beyond capacity", 2 };
+    {
+      ReassemblerTestHarness test { "insert beyond capacity", 2 };
 
-    //   test.execute( Insert { "ab", 0 } );
-    //   test.execute( BytesPushed( 2 ) );
-    //   test.execute( BytesPending( 0 ) );
+      test.execute( Insert { "ab", 0 } );
+      test.execute( BytesPushed( 2 ) );
+      test.execute( BytesPending( 0 ) );
 
-    //   test.execute( Insert { "cd", 2 } );
-    //   test.execute( BytesPushed( 2 ) );
-    //   test.execute( BytesPending( 0 ) );
+      test.execute( Insert { "cd", 2 } );
+      test.execute( BytesPushed( 2 ) );
+      test.execute( BytesPending( 0 ) );
 
-    //   test.execute( ReadAll( "ab" ) );
-    //   test.execute( BytesPushed( 2 ) );
-    //   test.execute( BytesPending( 0 ) );
+      test.execute( ReadAll( "ab" ) );
+      test.execute( BytesPushed( 2 ) );
+      test.execute( BytesPending( 0 ) );
 
-    //   test.execute( Insert { "cd", 2 } );
-    //   test.execute( BytesPushed( 4 ) );
-    //   test.execute( BytesPending( 0 ) );
+      test.execute( Insert { "cd", 2 } );
+      test.execute( BytesPushed( 4 ) );
+      test.execute( BytesPending( 0 ) );
 
-    //   test.execute( ReadAll( "cd" ) );
-    // }
+      test.execute( ReadAll( "cd" ) );
+    }
 
-    // {
-    //   ReassemblerTestHarness test { "overlapping inserts", 1 };
+    {
+      ReassemblerTestHarness test { "overlapping inserts", 1 };
 
-    //   test.execute( Insert { "ab", 0 } );
-    //   test.execute( BytesPushed( 1 ) );
-    //   test.execute( BytesPending( 0 ) );
+      test.execute( Insert { "ab", 0 } );
+      test.execute( BytesPushed( 1 ) );
+      test.execute( BytesPending( 0 ) );
 
-    //   test.execute( Insert { "ab", 0 } );
-    //   test.execute( BytesPushed( 1 ) );
-    //   test.execute( BytesPending( 0 ) );
+      test.execute( Insert { "ab", 0 } );
+      test.execute( BytesPushed( 1 ) );
+      test.execute( BytesPending( 0 ) );
 
-    //   test.execute( ReadAll( "a" ) );
-    //   test.execute( BytesPushed( 1 ) );
-    //   test.execute( BytesPending( 0 ) );
+      test.execute( ReadAll( "a" ) );
+      test.execute( BytesPushed( 1 ) );
+      test.execute( BytesPending( 0 ) );
 
-    //   test.execute( Insert { "abc", 0 } );
-    //   test.execute( BytesPushed( 2 ) );
-    //   test.execute( BytesPending( 0 ) );
+      test.execute( Insert { "abc", 0 } );
+      test.execute( BytesPushed( 2 ) );
+      test.execute( BytesPending( 0 ) );
 
-    //   test.execute( ReadAll( "b" ) );
-    //   test.execute( BytesPushed( 2 ) );
-    //   test.execute( BytesPending( 0 ) );
-    // }
+      test.execute( ReadAll( "b" ) );
+      test.execute( BytesPushed( 2 ) );
+      test.execute( BytesPending( 0 ) );
+    }
 
     {
       ReassemblerTestHarness test { "insert beyond capacity repeated with different data", 2 };
