@@ -1,8 +1,8 @@
 #pragma once
 
 #include "byte_stream.hh"
-#include <string>
 #include <set>
+#include <string>
 
 class Reassembler
 {
@@ -11,18 +11,18 @@ public:
   explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ) {}
 
   // 区间左闭右开 [first, last]
-  struct seg {
+  struct seg
+  {
     uint64_t first_index_ = 0;
     std::string data_ = "";
     uint64_t last_index_ = 0;
 
-    bool operator < (const seg& other) const {
-      return first_index_ < other.first_index_;
-    }
+    bool operator<( const seg& other ) const { return first_index_ < other.first_index_; }
 
-    seg(uint64_t first_index, std::string data) : first_index_(first_index), data_(data), last_index_(first_index + data.size()) {}
+    seg( uint64_t first_index, std::string data )
+      : first_index_( first_index ), data_( data ), last_index_( first_index + data.size() )
+    {}
   };
-
 
   /*
    * Insert a new substring to be reassembled into a ByteStream.
@@ -47,8 +47,8 @@ public:
   void insert( uint64_t first_index, std::string data, bool is_last_substring );
 
   // added
-  void cut_seg(seg& segment);
-  void insert_seg(seg& segemnt);
+  void cut_seg( seg& segment );
+  void insert_seg( seg& segemnt );
   void write_seg();
 
   // How many bytes are stored in the Reassembler itself?
@@ -66,10 +66,10 @@ private:
 
   std::set<seg> segments_ {};
 
-  uint64_t unassembled_byte_ {0};
+  uint64_t unassembled_byte_ { 0 };
 
-  uint64_t first_unassembled_ {0};
-  uint64_t first_unacceptable_ {0};
+  uint64_t first_unassembled_ { 0 };
+  uint64_t first_unacceptable_ { 0 };
 
-  uint64_t end_index_ {UINT64_MAX};
+  uint64_t end_index_ { UINT64_MAX };
 };
