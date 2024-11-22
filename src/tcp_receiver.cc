@@ -14,12 +14,12 @@ void TCPReceiver::receive( TCPSenderMessage message )
   }
 
   // SYN 位置被占了，不能写入
-  if (message.seqno == ISN_) { 
+  if ( message.seqno == ISN_ ) {
     return;
   }
 
   // 1 : SYN
-  if ( !ISN_.has_value() && message.SYN) {
+  if ( !ISN_.has_value() && message.SYN ) {
     ISN_ = message.seqno;
   }
 
