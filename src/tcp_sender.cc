@@ -1,6 +1,8 @@
 #include "tcp_sender.hh"
 #include "tcp_config.hh"
 
+#include <iostream>
+
 using namespace std;
 
 // Timer
@@ -52,8 +54,7 @@ void TCPSender::push( const TransmitFunction& transmit )
   }
 
   // 窗口够就一直发
-  while ( ( wnd_size_ == 0 ? 1 : wnd_size_ ) > numbers_in_flight
-          || msg.payload.size() <= TCPConfig::MAX_PAYLOAD_SIZE ) {
+  while ( ( wnd_size_ == 0 ? 1 : wnd_size_ ) > numbers_in_flight) {
     if ( FIN_sent ) {
       break;
     }
@@ -66,7 +67,7 @@ void TCPSender::push( const TransmitFunction& transmit )
 
     while (this->reader().bytes_buffered() != 0 && new_payload.size() < len) {
       string_view new_payload_view = this->reader().peek(); // peek观星下一段
-      //len 表示这个报文段允许的最大有效负载大小。
+      //len 每次填充的报文段的最大长度
       //new_payload.size() 是已经填充到 msg.payload 中的数据量。
 
       // 相减得到还能再插入的新的 字节长度
@@ -90,7 +91,9 @@ void TCPSender::push( const TransmitFunction& transmit )
     }
     transmit(msg);
     next_seqno_to_send += msg.sequence_length();
+    cout << "Before : numbers_in_flight : " << numbers_in_flight << endl;
     numbers_in_flight += msg.sequence_length();
+    cout << "After : numbers_in_flight : " << numbers_in_flight << endl;
     // emplace: 在 outstanding_message_ 中 直接构造 一个 MessageType 对象
     outstanding_messages_.emplace(move(msg));
   }
@@ -122,19 +125,28 @@ void TCPSender::receive( const TCPReceiverMessage& msg )
   }
 
   bool has_acknowledge { false };
-
+  cout << "outstanding_messages_.size : " <<outstanding_messages_.size() <<endl;
   while ( !outstanding_messages_.empty() ) {
-    auto& buffered_msg = outstanding_messages_.front(); // 取待确认的第一个segment
 
-    if ( recv_abs_seqno <= acked_seqno + buffered_msg.sequence_length() ) {
+    auto& buffered_msg = outstanding_messages_.front(); // 取待确认的第一个segment
+    cout << " buffered_msg: " << buffered_msg.sequence_length()<<endl;
+    cout << " buffered_msg syn: " << buffered_msg.SYN<<endl;
+
+    if ( recv_abs_seqno < acked_seqno + buffered_msg.sequence_length() ) {
       break;
     }
 
+      cout << "IN"  <<endl;
     // 正常确认 buffered_msg
     has_acknowledge = true;
     acked_seqno += buffered_msg.sequence_length();
-    outstanding_messages_.pop();
+    
+    // cout << "outstanding_messages_.size() : " << outstanding_messages_.size() << endl;
+    // cout << "receive before : numbers_in_flight : " << numbers_in_flight << endl;
+    //     cout << "oops"  <<endl;
     numbers_in_flight -= buffered_msg.sequence_length();
+    outstanding_messages_.pop();
+    // cout << "receive after : numbers_in_flight : " << numbers_in_flight << endl;
   }
 
   // 处理timer
@@ -165,6 +177,7 @@ void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& trans
 
       // 3. 保证timer_被释放，不会内存泄露
       timer_.reset();
+      retransmission_cnt_ += 1;
     }
   }
 }
