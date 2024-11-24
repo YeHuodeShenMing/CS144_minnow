@@ -78,8 +78,7 @@ void TCPSender::push( const TransmitFunction& transmit )
       input_.reader().pop( new_payload_view.size() );
     }
     
-    // cout << "msg.sequence_length() : " << (msg.sequence_length() ) << endl;
-    // cout << "remaining > msg.sequence_length() ??? " << (remaining > msg.sequence_length()) << endl;
+    
     // 窗口有空余位置再加FIN，否则不加
     if ( !msg.FIN && this->reader().is_finished() && remaining > msg.sequence_length()) {
       // cout << "I am here" << endl;
