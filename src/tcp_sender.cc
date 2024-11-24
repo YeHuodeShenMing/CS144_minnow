@@ -137,7 +137,7 @@ void TCPSender::receive( const TCPReceiverMessage& msg )
   }
 
   bool has_acknowledge { false };
-  // cout << "outstanding_messages_.size : " << outstanding_messages_.size() << endl;
+  // cerr << "outstanding_messages_.size : " << outstanding_messages_.size() << endl;
   while ( !outstanding_messages_.empty() ) {
 
     auto& buffered_msg = outstanding_messages_.front(); // 取待确认的第一个segment
