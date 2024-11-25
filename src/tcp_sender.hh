@@ -33,7 +33,7 @@ public:
 
 private:
   uint64_t RTO_;
-  uint64_t time_passed_ {0};
+  uint64_t time_passed_ { 0 };
   bool is_active_ {};
 };
 
@@ -86,5 +86,5 @@ private:
 
   // 缓冲区 FIFO 算法
   std::queue<TCPSenderMessage> outstanding_messages_ {};
-  uint64_t numbers_in_flight {0}; // ??? 缓冲区中字节长度
+  uint64_t numbers_in_flight { 0 }; // ??? 缓冲区中字节长度
 };

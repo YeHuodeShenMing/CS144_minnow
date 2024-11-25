@@ -77,10 +77,9 @@ void TCPSender::push( const TransmitFunction& transmit )
       msg.payload += new_payload_view;
       input_.reader().pop( new_payload_view.size() );
     }
-    
-    
+
     // 窗口有空余位置再加FIN，否则不加
-    if ( !msg.FIN && this->reader().is_finished() && remaining > msg.sequence_length()) {
+    if ( !msg.FIN && this->reader().is_finished() && remaining > msg.sequence_length() ) {
       // cout << "I am here" << endl;
       msg.FIN = true;
       FIN_sent = true;
@@ -125,7 +124,7 @@ void TCPSender::receive( const TCPReceiverMessage& msg )
 
   wnd_size_ = msg.window_size;
   // 没有ackno也得接收 窗口大小，等待下一次传输
-    if ( !msg.ackno.has_value() ) {
+  if ( !msg.ackno.has_value() ) {
     return;
   }
   const uint64_t recv_abs_seqno = msg.ackno->unwrap( isn_, next_seqno_to_send );
