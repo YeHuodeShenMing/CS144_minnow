@@ -6,6 +6,11 @@
 #include "ethernet_frame.hh"
 #include "ipv4_datagram.hh"
 
+#include <unordered_map>
+
+// 把IPv4的Address转化为uint32_t形式，可以
+using AddressNumeric = uint32_t;
+
 // A "network interface" that connects IP (the internet layer, or network layer)
 // with Ethernet (the network access layer, or link layer).
 
@@ -81,4 +86,30 @@ private:
 
   // Datagrams that have been received
   std::queue<InternetDatagram> datagrams_received_ {};
+
+  // Add
+  // IPv4 创建 Ethernet frame
+  bool create_frame_IPv4(const InternetDatagram& dgram, AddressNumeric next_hop, EthernetFrame& frame);
+
+  // ARP 创建 Ethernet frame
+  bool create_frame_ARP(const ARPMessage& arp_msg);
+
+  // ARP请求分组获得目标host的MAC地址
+  void send_arp_request(AddressNumeric next_hop_ip);
+
+  // 判断ARP报文是否为 相应 报文
+  bool reply_arp_request(const ARPMessage& arp_msg);
+
+  // ARP Cache中的 IPv4 和 MAC 转换
+  std::unordered_map<AddressNumeric, EthernetAddress> ARP_Cache;
+
+  // ARP请求报文时间队列
+  std::unordered_map<AddressNumeric, uint64_t> recent_arp_requests_;
+
+  // 等待发送的数据报
+  std::unordered_map<AddressNumeric, InternetDatagram> waiting_datagrams_;
+
+  uint64_t curr_time = 0;
+  uint64_t RESEND_DELAY = 5000;
+  uint64_t KEEP_ARP_CACHE_TIME = 30000;
 };
