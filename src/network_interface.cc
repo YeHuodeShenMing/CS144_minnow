@@ -79,21 +79,24 @@ void NetworkInterface::recv_frame( const EthernetFrame& frame )
       ARP_Cache[sender_Ip_address] = make_pair( sender_Ethernet_address, Timer {} );
 
       // 如果 请求
-      if ( arp_recv.opcode == ARPMessage::OPCODE_REQUEST && arp_recv.target_ip_address == ip_address_.ipv4_numeric()) {
-        ARPMessage arp_reply = make_arp_message( ARPMessage::OPCODE_REPLY, sender_Ethernet_address, sender_Ip_address );
+      if ( arp_recv.opcode == ARPMessage::OPCODE_REQUEST
+           && arp_recv.target_ip_address == ip_address_.ipv4_numeric() ) {
+        ARPMessage arp_reply
+          = make_arp_message( ARPMessage::OPCODE_REPLY, sender_Ethernet_address, sender_Ip_address );
 
         return transmit(
-          { {sender_Ethernet_address , ethernet_address_, EthernetHeader::TYPE_ARP }, serialize( arp_reply ) } );
+          { { sender_Ethernet_address, ethernet_address_, EthernetHeader::TYPE_ARP }, serialize( arp_reply ) } );
       }
-      
+
       // 如果 响应
-      if ( datagrams_waiting_.count(sender_Ip_address)) {
-          ARP_Cache[sender_Ip_address] = {sender_Ethernet_address, Timer {}};
-          for(const auto& dgram : datagrams_waiting_[sender_Ip_address]) {
-            transmit({{sender_Ethernet_address, ethernet_address_, EthernetHeader::TYPE_IPv4}, serialize(dgram)});
-          }
-          waiting_timer_.erase(sender_Ip_address);
-          datagrams_waiting_.erase(sender_Ip_address);
+      if ( datagrams_waiting_.count( sender_Ip_address ) ) {
+        ARP_Cache[sender_Ip_address] = { sender_Ethernet_address, Timer {} };
+        for ( const auto& dgram : datagrams_waiting_[sender_Ip_address] ) {
+          transmit(
+            { { sender_Ethernet_address, ethernet_address_, EthernetHeader::TYPE_IPv4 }, serialize( dgram ) } );
+        }
+        waiting_timer_.erase( sender_Ip_address );
+        datagrams_waiting_.erase( sender_Ip_address );
       }
     }
   }

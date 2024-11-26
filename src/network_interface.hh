@@ -89,7 +89,7 @@ private:
   std::queue<InternetDatagram> datagrams_received_ {};
 
   // Add
-    struct Timer
+  struct Timer
   {
     size_t ms_ {};
     constexpr Timer& tick( const size_t& ms_since_last_tick ) noexcept
@@ -103,9 +103,9 @@ private:
   // IPv4 创建 Ethernet frame
   bool create_frame_IPv4( const InternetDatagram& dgram, AddressNumeric next_hop, EthernetFrame& frame );
 
-  ARPMessage make_arp_message(const uint16_t opcode,
-                                 const EthernetAddress& target_ethernet_address,
-                                 const uint32_t target_ip_address) noexcept;
+  ARPMessage make_arp_message( const uint16_t opcode,
+                               const EthernetAddress& target_ethernet_address,
+                               const uint32_t target_ip_address ) noexcept;
 
   // ARP Cache中的 IPv4 和 MAC 转换
   std::unordered_map<AddressNumeric, std::pair<EthernetAddress, Timer>> ARP_Cache {};
