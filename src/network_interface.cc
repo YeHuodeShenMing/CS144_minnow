@@ -49,7 +49,7 @@ void NetworkInterface::send_datagram( const InternetDatagram& dgram, const Addre
 void NetworkInterface::recv_frame( const EthernetFrame& frame )
 {
   // Your code here.
-  if ( frame.header.dst != ethernet_address_ || frame.header.dst != ETHERNET_BROADCAST ) {
+  if ( frame.header.dst != ethernet_address_ && frame.header.dst != ETHERNET_BROADCAST ) {
     return;
   }
 
