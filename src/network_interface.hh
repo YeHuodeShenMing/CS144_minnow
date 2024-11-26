@@ -3,9 +3,9 @@
 #include <queue>
 
 #include "address.hh"
+#include "arp_message.hh"
 #include "ethernet_frame.hh"
 #include "ipv4_datagram.hh"
-#include "arp_message.hh"
 
 #include <unordered_map>
 
@@ -89,28 +89,33 @@ private:
   std::queue<InternetDatagram> datagrams_received_ {};
 
   // Add
+    struct Timer
+  {
+    size_t ms_ {};
+    constexpr Timer& tick( const size_t& ms_since_last_tick ) noexcept
+    {
+      ms_ += ms_since_last_tick;
+      return *this;
+    }
+    constexpr bool expired( const size_t& TTL_ms ) const noexcept { return ms_ >= TTL_ms; }
+  };
+
   // IPv4 创建 Ethernet frame
   bool create_frame_IPv4( const InternetDatagram& dgram, AddressNumeric next_hop, EthernetFrame& frame );
 
-  // ARP 创建 Ethernet frame
-  bool create_frame_ARP( const ARPMessage& arp_msg );
-
-  // ARP请求分组获得目标host的MAC地址
-  void send_arp_request( AddressNumeric next_hop_ip );
-
-  // 判断ARP报文是否为 相应 报文
-  bool reply_arp_request( const ARPMessage& arp_msg );
+  ARPMessage make_arp_message(const uint16_t opcode,
+                                 const EthernetAddress& target_ethernet_address,
+                                 const uint32_t target_ip_address) noexcept;
 
   // ARP Cache中的 IPv4 和 MAC 转换
-  std::unordered_map<AddressNumeric, EthernetAddress> ARP_Cache {};
+  std::unordered_map<AddressNumeric, std::pair<EthernetAddress, Timer>> ARP_Cache {};
 
   // ARP请求报文时间队列
-  std::unordered_map<AddressNumeric, uint64_t> recent_arp_requests_ {};
+  std::unordered_map<AddressNumeric, Timer> waiting_timer_ {};
 
   // 等待发送的数据报
-  std::unordered_map<AddressNumeric, InternetDatagram> waiting_datagrams_ {};
+  std::unordered_map<AddressNumeric, std::vector<InternetDatagram>> datagrams_waiting_ {};
 
-  uint64_t curr_time = 0;
-  uint64_t RESEND_DELAY = 5000;
-  uint64_t KEEP_ARP_CACHE_TIME = 30000;
+  uint64_t RESEND_DELAY_5 = 5000;
+  uint64_t KEEP_ARP_CACHE_30 = 30000;
 };
