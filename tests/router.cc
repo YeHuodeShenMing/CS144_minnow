@@ -253,31 +253,32 @@ void network_simulator()
 
   Network network;
 
-  cout << green << "\n\nTesting traffic between two ordinary hosts (applesauce to cherrypie)..." << normal
-       << "\n\n";
-  {
-    auto dgram_sent = network.host( "applesauce" ).send_to( network.host( "cherrypie" ).address() );
-    dgram_sent.header.ttl--;
-    dgram_sent.header.compute_checksum();
-    network.host( "cherrypie" ).expect( dgram_sent );
-    network.simulate();
-  }
+  // cout << green << "\n\nTesting traffic between two ordinary hosts (applesauce to cherrypie)..." << normal
+  //      << "\n\n";
+  // {
+  //   auto dgram_sent = network.host( "applesauce" ).send_to( network.host( "cherrypie" ).address() );
+  //   dgram_sent.header.ttl--;
+  //   dgram_sent.header.compute_checksum();
+  //   network.host( "cherrypie" ).expect( dgram_sent );
+  //   network.simulate();
+  // }
 
-  cout << green << "\n\nTesting traffic between two ordinary hosts (cherrypie to applesauce)..." << normal
-       << "\n\n";
-  {
-    auto dgram_sent = network.host( "cherrypie" ).send_to( network.host( "applesauce" ).address() );
-    dgram_sent.header.ttl--;
-    dgram_sent.header.compute_checksum();
-    network.host( "applesauce" ).expect( dgram_sent );
-    network.simulate();
-  }
+  // cout << green << "\n\nTesting traffic between two ordinary hosts (cherrypie to applesauce)..." << normal
+  //      << "\n\n";
+  // {
+  //   auto dgram_sent = network.host( "cherrypie" ).send_to( network.host( "applesauce" ).address() );
+  //   dgram_sent.header.ttl--;
+  //   dgram_sent.header.compute_checksum();
+  //   network.host( "applesauce" ).expect( dgram_sent );
+  //   network.simulate();
+  // }
 
   cout << green << "\n\nSuccess! Testing applesauce sending to the Internet." << normal << "\n\n";
   {
     auto dgram_sent = network.host( "applesauce" ).send_to( Address { "1.2.3.4" } );
     dgram_sent.header.ttl--;
     dgram_sent.header.compute_checksum();
+
     network.host( "default_router" ).expect( dgram_sent );
     network.simulate();
   }

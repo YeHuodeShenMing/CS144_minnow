@@ -53,6 +53,7 @@ void Router::route()
       // 如果 optional 包含一个值，则返回该值；如果不包含值（即 optional 为 nullopt），则返回提供的默认值。
       _interfaces[target_interface]->send_datagram(
         dgram, next_hop.value_or( Address::from_ipv4_numeric( dgram.header.dst ) ) );
+      cerr << "DEBUG: router = " << _interfaces[target_interface]->name() << endl;
     }
   }
 }
@@ -61,7 +62,7 @@ void Router::route()
 optional<router_Info> Router::match( uint32_t address ) const noexcept
 {
   for ( int i = 31; i > 0; i-- ) {
-    uint32_t aligned_address = address >> ( 32 - i );
+    uint32_t aligned_address = rotr( address, 32 - i );
     if ( routing_table_[i].count( aligned_address ) ) {
       return routing_table_[i].at( aligned_address );
     }
