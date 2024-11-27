@@ -44,7 +44,7 @@ void Router::route()
       dgram.header.compute_checksum();
 
       const optional<router_Info>& target_router { match( dgram.header.dst ) };
-      cout << "target_router.has_value() : " << target_router.has_value() <<endl;
+      // cout << "target_router.has_value() : " << target_router.has_value() <<endl;
       if ( !target_router.has_value() ) {
         continue;
       }
