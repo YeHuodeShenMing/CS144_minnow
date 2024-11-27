@@ -54,7 +54,7 @@ void Router::route()
       // 如果 optional 包含一个值，则返回该值；如果不包含值（即 optional 为 nullopt），则返回提供的默认值。
       _interfaces[target_interface]->send_datagram(
         dgram, next_hop.value_or( Address::from_ipv4_numeric( dgram.header.dst ) ) );
-      cerr << "DEBUG: router = " << _interfaces[target_interface]->name() << endl;
+      // cerr << "DEBUG: router = " << _interfaces[target_interface]->name() << endl;
     }
   }
 }
