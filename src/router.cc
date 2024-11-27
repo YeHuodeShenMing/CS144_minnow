@@ -23,7 +23,7 @@ void Router::add_route( const uint32_t route_prefix,
   // Your code here.
   // rotr(x, n) x右移n位 将 网络号 位存进去即可
   // 存的 router_Info
-  routing_table_[prefix_length][rotr( route_prefix, 32 - prefix_length )] = { interface_num, next_hop };
+  routing_table_[prefix_length][ route_prefix >> ((prefix_length == 0) ? 0 : (32 - prefix_length ))] = { interface_num, next_hop };
 }
 
 // Go through all the interfaces, and route every incoming datagram to its proper outgoing interface.
@@ -44,6 +44,7 @@ void Router::route()
       dgram.header.compute_checksum();
 
       const optional<router_Info>& target_router { match( dgram.header.dst ) };
+      cout << "target_router.has_value() : " << target_router.has_value() <<endl;
       if ( !target_router.has_value() ) {
         continue;
       }
@@ -61,9 +62,11 @@ void Router::route()
 // 寻找 对应 Interface
 optional<router_Info> Router::match( uint32_t address ) const noexcept
 {
-  for ( int i = 31; i > 0; i-- ) {
-    uint32_t aligned_address = rotr( address, 32 - i );
+  for ( int i = 31; i >= 0; i-- ) {
+    // 全0时候匹配 default router
+    uint32_t aligned_address = (i == 0) ? 0 : address >> ( 32 - i );
     if ( routing_table_[i].count( aligned_address ) ) {
+      // cout << "I_F num" << routing_table_[i].at(aligned_address).first << endl;
       return routing_table_[i].at( aligned_address );
     }
   }
